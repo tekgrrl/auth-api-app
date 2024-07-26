@@ -127,7 +127,7 @@ router.post("/request-signin", async (req, res) => {
     }
 
     const token = crypto.randomBytes(32).toString("hex");
-    const signinLink = `http://yourfrontend.com/signin?token=${token}`;
+    const signinLink = `http://localhost:3001/auth/signin?token=${token}`;
 
     await Token.create({
       token,
@@ -156,9 +156,8 @@ router.post("/request-signin", async (req, res) => {
 });
 
 // Signin endpoint
-router.post("/signin", async (req, res) => {
-  const { token } = req.body;
-  console.log("Signin token:", token);
+router.get("/signin", async (req, res) => {
+  const { token } = req.query;
 
   try {
     const signinToken = await Token.findOne({
@@ -177,7 +176,9 @@ router.post("/signin", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({ token: jwtToken });
+    // res.json({ token: jwtToken }); // TODO: Remove this line
+    // Redirect to the frontend's auth page with the JWT token
+    res.redirect(`http://localhost:3000/api/auth?token=${jwtToken}`);
   } catch (error) {
     console.error("Error in signin:", error);
     res.status(500).json({ error: "Failed to process signin" });
@@ -215,7 +216,7 @@ router.post("/signup", async (req, res) => {
     });
     await newToken.save();
 
-    const verificationLink = `http://yourdomain.com/auth/verify?token=${token}`;
+    const verificationLink = `http://localhost:3001/auth/verify?token=${token}`;
     const mailOptions = {
       from: "noreply@yourdomain.com",
       to: email,

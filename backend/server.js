@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 // Models
 const Token = require("./models/Token");
@@ -15,11 +16,6 @@ const authRoutes = require("./routes/auth");
 const envFile = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : ".env";
 dotenv.config({ path: envFile });
 
-console.log(`env file: ${envFile}`);
-console.log(`DB_URI: ${process.env.DB_URI}`);
-console.log(`ETHEREAL_USER: ${process.env.ETHEREAL_USER}`);
-console.log(`ETHEREAL_PASS: ${process.env.ETHEREAL_PASS}`);
-
 const app = express();
 app.use(bodyParser.json());
 
@@ -28,6 +24,15 @@ mongoose
   .connect(process.env.DB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+// Use CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Allow only your frontend to access the backend
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allow specific methods if needed
+    credentials: true, // Enable cookies and other credentials if needed
+  })
+);
 
 // Use auth routes
 app.use("/auth", authRoutes);

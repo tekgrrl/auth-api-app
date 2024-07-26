@@ -132,4 +132,5 @@ backend/.env
 backend/.env.dev
 backend/.env.test
 backend/generate_jwt_secret.js
+frontend/node_modules
 .history
